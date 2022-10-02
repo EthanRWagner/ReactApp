@@ -6,16 +6,20 @@ import axios from 'axios';
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter (index) {
-    const updated = characters.filter((character, i) => {
-        return i !== index
-      });
-      setCharacters(updated);
+  function removeOneCharacter (index, id) {
+    deleteUser(id).then( result => {
+      if(result && result.status === 204){
+        const updated = characters.filter((character, i) => {
+          return i !== index
+        });
+        setCharacters(updated);
+      }
+    });
   }
   
   function updateList(person) {
     makePostCall(person).then( result => {
-      if (result && result.status === 200)
+      if (result && result.status === 201)
         setCharacters([...characters, person] );
     });
   }
@@ -48,6 +52,17 @@ function MyApp() {
   async function makePostCall(person){
     try {
       const response = await axios.post('http://localhost:5000/users', person);
+      return response;
+    }
+    catch(error){
+      console.log(error);
+      return false;
+    }
+  }
+
+  async function deleteUser(id){
+    try {
+      const response = await axios.delete('http://localhost:5000/users/' + id, id);
       return response;
     }
     catch(error){
