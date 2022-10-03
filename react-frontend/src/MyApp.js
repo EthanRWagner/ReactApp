@@ -6,15 +6,19 @@ import axios from 'axios';
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function removeOneCharacter (index, id) {
-    deleteUser(id).then( result => {
-      if(result && result.status === 204){
-        const updated = characters.filter((character, i) => {
-          return i !== index
-        });
-        setCharacters(updated);
-      }
+  async function removeOneCharacter (index, id) {
+    const updated = characters.filter((character, i) => {
+      return i !== index
     });
+    setCharacters(updated);
+    try {
+      const response = await axios.delete('http://localhost:5000/users/' + id, id);
+      return response.data.users_list;
+    }
+    catch(error){
+      console.log(error);
+      return false;
+    }
   }
   
   function updateList(person) {
@@ -60,16 +64,16 @@ function MyApp() {
     }
   }
 
-  async function deleteUser(id){
-    try {
-      const response = await axios.delete('http://localhost:5000/users/' + id, id);
-      return response;
-    }
-    catch(error){
-      console.log(error);
-      return false;
-    }
-  }
+  // async function deleteUser(id){
+  //   try {
+  //     const response = await axios.delete('http://localhost:5000/users/' + id, id);
+  //     return response.data.users_list;
+  //   }
+  //   catch(error){
+  //     console.log(error);
+  //     return false;
+  //   }
+  // }
   
   return (
     <div className="container">
